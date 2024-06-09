@@ -2,11 +2,12 @@ const express = require("express");
 const { createTodo, updateTodo } = require("./types");
 const { todo } = require("./db");
 const app = express();
-const port = 3000;
+const port = 8000;
 
 app.use(express.json());
 
 app.get("/todos", async function (req, res) {
+  console.log("request received")
   const todos = await todo.find({});
   res.json({
     todos,
@@ -42,7 +43,7 @@ app.put("/completed", async function (req, res) {
     });
     return;
   }
-  await todo.update(
+  await todo.findOneAndUpdate(
     {
       _id: req.body.id,
     },
@@ -55,6 +56,14 @@ app.put("/completed", async function (req, res) {
   });
 });
 
+app.delete("/delete/:id", async function (req, res) {
+  const enteredId = req.params["id"];
+  await todo.deleteOne({ _id: enteredId });
+  req.json({
+    msg: "Todo is deleted",
+  });
+});
+
 app.listen(port, () => {
-  console.log("to do application running on port 3000");
+  console.log("to do application running on port 8000");
 });
